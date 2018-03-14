@@ -1,0 +1,51 @@
+\include{settings}
+%% DOCUMENT
+%------------------------------------------------------------------%
+\begin{document}
+  \title{Wave Packet Dynamics}
+
+  \author{
+    Joar Svartholm - josv0150(\mail{josv0150@student.umu.se})\\
+  }
+  \date{\today}
+
+\begin{titlepage}
+  \maketitle
+  \thispagestyle{fancy}
+  \headheight 35pt
+  \rhead{\small\today}
+  \lhead{\small Department of Physics\\
+    Umeå Universitet}
+
+% State the aim of the experiment, what was measured, which techniques and methods were used, and the main result(s) and conclusion(s). Remember that the abstract should be understandable on its own, and you can thereby not refer to equations/figures/tables in the report. You should also not use references, since the information in the abstract should be available in the actual report.
+\begin{abstract}
+  abstract
+
+\end{abstract}
+
+  % Ändra till rätt namn m.m.
+  \cfoot{Numerical Methods in Physics\\
+  Supervisor:Claude Dion }
+
+\end{titlepage}
+
+
+\newpage
+\pagestyle{fancy}
+\headheight 30pt
+\rhead{\small \myTitle}
+\lhead{\small \myAuthor \today}
+\cfoot{\thepage}
+
+% Innehåll
+\tableofcontents
+\newpage
+
+\input{Introduction}
+\input{Theory}
+\input{Code}
+\input{Results}
+\input{Conclusions}
+
+
+\end{document}
