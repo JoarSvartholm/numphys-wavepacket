@@ -1,0 +1,14 @@
+units = AU
+mass = 1.
+nx = 49152
+x_min = -8.
+x_max = 8.
+dt = .0000002
+nt = 60000
+nprint = 500
+
+output = norm
+output = energy
+output = x_avg
+output = sx
+output = user_defined

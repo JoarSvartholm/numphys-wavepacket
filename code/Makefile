@@ -16,6 +16,9 @@ LDLIBS = -L/usr/local/lib -lfftw3 -lm
 freepart:	wavepacket.o free_particle.o
 	$(CC) -o $@ $^ $(LDLIBS)
 
+potwell:	wavepacket.o pot_well.o
+	$(CC) -o $@ $^ $(LDLIBS)
+
 %.o:%.c
 	$(CC) -c -o $@ $<
 

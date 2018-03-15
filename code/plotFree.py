@@ -1,10 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+savePlots = 0
+showPlots = 1
+
 x0=-2;
 s0 = 0.1;
 t1 = 8e-3;
-xx = np.linspace(-8,8,10000)
+xx = np.linspace(-8,8,49152)
 psi02 = np.sqrt(1/np.pi)/s0*np.exp(-(xx-x0)**2/(s0**2))
 
 k0 = 240;
@@ -21,4 +24,18 @@ plt.plot(xx,abs(psiEnd)**2,'--',label="Analytic solution")
 plt.plot(xx,psi02,label="Initial wavefunction")
 plt.xlim(-4,4)
 plt.legend()
-plt.show()
+if savePlots:
+    plt.savefig("../figs/free-part.pdf")
+
+plt.figure("imag part")
+plt.plot(x,psiI,label="Numerical solution")
+plt.plot(xx,psiEnd.imag,'--',label="Analytic solution")
+plt.xlim(-0.5,0.35)
+plt.legend()
+if savePlots:
+    plt.savefig("../figs/free-part-imag.pdf")
+
+if showPlots:
+    plt.show()
+
+print(np.max(np.abs(psi2-abs(psiEnd)**2)))
