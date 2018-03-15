@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
 
 savePlots = 0
 showPlots = 1
@@ -48,15 +49,24 @@ E = k**2/2
 Tana = 1/(1+(V0**2/(4*E*(E+V0)))*(np.sin(2*a*np.sqrt(2*(E+V0))))**2)
 Ranal = 0*k -Tana+1
 
+n = 13
+Eres = (n*np.pi/(2*a))**2/2-V0
+res = np.sqrt(2*Eres)
+print(res)
 
 k0,t,R,T = np.genfromtxt("../data/pot_well_RT_all.dat",unpack=True)
 
+Rint = interp1d(k0,R,kind="cubic")
+Tint = interp1d(k0,T,kind="cubic")
+
 plt.figure("RT vs k0")
-plt.plot(k0,R,'o',label="Reflection")
-plt.plot(k0,T,'o',label="Transmission")
+plt.plot(k,Rint(k),'b-',label="Reflection")
+plt.plot(k0,R,'bo')
+plt.plot(k0,T,'ro')
+plt.plot(k,Tint(k),'r-',label="Transmission")
 plt.plot(k,Tana,label="aTransmission")
 plt.plot(k,Ranal,label="aReflection")
-plt.axvline(200)
+plt.axvline(res)
 plt.legend()
 
 if showPlots:
