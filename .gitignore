@@ -19,3 +19,6 @@ code/*.o
 morse.c
 morse.dSYM
 morse
+code/input_files
+code/output_files
+!code/input_files/pot_well_template.in

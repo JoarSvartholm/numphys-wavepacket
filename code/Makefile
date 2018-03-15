@@ -19,6 +19,9 @@ freepart:	wavepacket.o free_particle.o
 potwell:	wavepacket.o pot_well.o
 	$(CC) -o $@ $^ $(LDLIBS)
 
+barrier:	wavepacket.o pot_barrier.o
+	$(CC) -o $@ $^ $(LDLIBS)
+
 %.o:%.c
 	$(CC) -c -o $@ $<
 

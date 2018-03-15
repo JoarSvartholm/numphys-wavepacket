@@ -19,7 +19,7 @@ V0 = -1
 a = 0.04
 V = 0*(abs(xx)>=a)+ V0*(abs(xx)<a)
 
-x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_well_wave_k0_200.dat",unpack=True,skip_header=True)
+x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_barrier_wave_k0_200.dat",unpack=True,skip_header=True)
 
 plt.figure("Potential Well")
 plt.plot(x,psi2,label="Numerical solution")
@@ -31,10 +31,10 @@ plt.plot(xx,V,label="Potential")
 #plt.xlim(-4,4)
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/pot-well.pdf")
+    plt.savefig("../figs/pot-barrier.pdf")
 
 
-t,R,T = np.genfromtxt("../data/pot_well_RT_k0_150.dat",unpack=True,skip_header=True)
+t,R,T = np.genfromtxt("../data/pot_barrier_RT_k0_150.dat",unpack=True,skip_header=True)
 
 plt.figure("relfection transmission")
 plt.plot(t,R,label="Reflection coefficient")
@@ -42,14 +42,14 @@ plt.plot(t,T,label="Transmission coefficient")
 plt.legend()
 
 k = np.linspace(150,350,100)
-V0 = 1e5
+V0 = 2e4
 E = k**2/2
+kappa = np.sqrt(2*E)
 
-Tana = 1/(1+(V0**2/(4*E*(E+V0)))*(np.sin(2*a*np.sqrt(2*(E+V0))))**2)
+Tana = 1/(1+(V0**2/(4*E(V0-E))*(np.sinh(2*a*np.sqrt(2*(V0-E))))**2))
 Ranal = 0*k -Tana+1
 
-
-k0,t,R,T = np.genfromtxt("../data/pot_well_RT_all.dat",unpack=True)
+k0,t,R,T = np.genfromtxt("../data/pot_barrier_RT_all.dat",unpack=True)
 
 plt.figure("RT vs k0")
 plt.plot(k0,R,'o',label="Reflection")
