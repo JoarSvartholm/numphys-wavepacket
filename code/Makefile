@@ -22,6 +22,9 @@ potwell:	wavepacket.o pot_well.o
 barrier:	wavepacket.o pot_barrier.o
 	$(CC) -o $@ $^ $(LDLIBS)
 
+diffScheme:	wavediff.o diff_pot_barrier.o
+	$(CC) -o $@ $^ $(LDLIBS) $(LOADLIBES)
+
 %.o:%.c
 	$(CC) -c -o $@ $<
 
