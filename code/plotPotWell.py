@@ -20,27 +20,31 @@ V0 = -1
 a = 0.04
 V = 0*(abs(xx)>=a)+ V0*(abs(xx)<a)
 
-x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_well_wave_k0_200.dat",unpack=True,skip_header=True)
+x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_well_wave_k0_280.dat",unpack=True,skip_header=True)
 
+m = np.max(np.abs(psi02))
 plt.figure("Potential Well")
-plt.plot(x,psi2,label="Numerical solution")
-#plt.plot(x,psiR,label="REal")
-#plt.plot(x,psiI,label="imag")
-#plt.plot(xx,abs(psiEnd)**2,'--',label="Analytic solution")
-plt.plot(xx,psi02,label="Initial wavefunction")
-plt.plot(xx,V,label="Potential")
-#plt.xlim(-4,4)
+plt.plot(x,psi2/m,label="Numerical solution")
+plt.plot(xx,psi02/m,label="Initial wavefunction")
+plt.plot(xx,V/m,label="Potential")
+plt.xlim(-3,3)
+plt.ylabel("$\Psi$ [Normalized]")
+plt.xlabel("x")
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/pot-well.pdf")
+    plt.savefig("../figs/pot-well-wave.pdf")
 
 
-t,R,T = np.genfromtxt("../data/pot_well_RT_k0_150.dat",unpack=True,skip_header=True)
+t,R,T = np.genfromtxt("../data/pot_well_RT_k0_280.dat",unpack=True,skip_header=True)
 
 plt.figure("relfection transmission")
-plt.plot(t,R,label="Reflection coefficient")
-plt.plot(t,T,label="Transmission coefficient")
+plt.plot(t,R,label="$R$")
+plt.plot(t,T,label="$T$")
+plt.xlabel("t [s]")
+plt.xlim(0,0.008)
 plt.legend()
+if savePlots:
+    plt.savefig("../figs/pot-well-RT.pdf")
 
 k = np.linspace(150,350,100)
 V0 = 1e5
@@ -60,15 +64,18 @@ Rint = interp1d(k0,R,kind="cubic")
 Tint = interp1d(k0,T,kind="cubic")
 
 plt.figure("RT vs k0")
-plt.plot(k,Rint(k),'b-',label="Reflection")
+plt.plot(k,Rint(k),'b-',label="$R_{num}$")
 plt.plot(k0,R,'bo')
 plt.plot(k0,T,'ro')
-plt.plot(k,Tint(k),'r-',label="Transmission")
-plt.plot(k,Tana,label="aTransmission")
-plt.plot(k,Ranal,label="aReflection")
+plt.plot(k,Tint(k),'r-',label="$T_{num}$")
+plt.plot(k,Tana,label="$T_{analytic}$")
+plt.plot(k,Ranal,label="$R_{analytic}$")
 plt.axvline(res[0])
-plt.axvline(res[1],label="resonance")
+plt.axvline(res[1],label="$k_{resonance}$")
 plt.legend()
+plt.xlabel("$k_0$ [1/m]")
+if savePlots:
+    plt.savefig("../figs/pot-well-RTk0.pdf")
 
 if showPlots:
     plt.show()

@@ -1,0 +1,102 @@
+\newpage
+\section{Theory}
+
+The dynamics of a quantum particle is described by the time dependent Schrödinger equation
+
+\begin{equation}
+  \label{eq:TDSE}
+  i \hbar \frac{\dn}{\dn t}\psi(x,t) = \hat{H}\psi(x,t) \tag{TDSE}
+\end{equation}
+
+where $\hbar$ is planck's constant, $\psi$ is the wavefunction of the particle, $i = \sqrt{-1}$ and $\hat{H}$ is the Hamiltonian
+
+\begin{equation}
+  \label{eq:ham}
+  \hat{H} = \hat{T} + \hat{V} = - \frac{\hbar^2}{2m}\frac{\dn^2}{\dn x^2} + V(x),
+\end{equation}
+
+the sum of the kinetic and potential operator. In this equation, $m$ is the mass of the particle and $V(x)$ is the potential. The naive solution to Eq. \eqref{eq:TDSE} is
+
+\begin{equation}
+  \label{eq:TDSEsol}
+  \psi(x,t+\Delta t) \approx e^{-\frac{i\Delta t}{\hbar}\hat{H}} \psi(x,t)
+\end{equation}
+
+for any small step size $\Delta t$. The problem with this naive solution is that taking the exponential of an operator is non-trivial.
+
+\subsection{Split operator method}
+
+One way to get around this is by noting that the kinetic operator includes a second derivative in position space but a a simple multiplication in momentum space. Namely that
+
+\begin{equation*}
+  e^{\frac{i \Delta t \hbar}{2m}\frac{\dn^2}{\dn x^2}}\psi(x,t) \longleftrightarrow e^{- \frac{i \Delta t }{2m\hbar}p^2}\psi(p,t)
+\end{equation*}
+
+This motivates the splitting of the hamilton operator into two parts, taking the potential operator in position space and the kinetic operator in ordinary space. The final time stepping can thus be written as
+
+\begin{equation}
+  \label{eq:split}
+  \psi(x,t+\Delta t) = e^{-\frac{i\Delta t}{2\hbar}\hat{V}}\mathcal F^{-1} e^{-\frac{i\Delta t}{\hbar}\hat{T_p}}\mathcal F e^{-\frac{i\Delta t}{2\hbar}\hat{V}} \psi(x,t)
+\end{equation}
+
+where $\hat{T_p}$ denotes the kinetic operator in momentum space and $\mathcal F$ and $\mathcal F^{-1}$ denotes the direct and inverse fourier transform to go from position space to momentum space and vice versa. Note that the potential operator is also split into two parts in order to make the operation unitary and thus reversible.
+
+\subsection{Second-order differencing}
+
+\subsection{The free particle}
+
+In order to study the numerical algorithms for something more interesting it is good to first try them on something with a known solution. Consider the initial gaussian wavefunction with central wavenumber $k_0$ and width $2\sigma_0^2$
+
+\begin{equation}
+  \label{eq:init}
+  \psi(x,0) = \left( \frac{1}{\pi \sigma_0^2} \right)^{1/4} e^{ik_0x}e^{-(x-x_0)^2/2\sigma_0^2}.
+\end{equation}
+
+The analytical solution to Eq. \eqref{eq:TDSE} for this initial condition using $V(x)=0$ is
+
+\begin{equation}
+  \label{eq:free}
+  \psi(x,t) = \left(\frac{\sigma_0^2}{\pi}\right)^{1/4} \frac{e^{i\phi}}{(\sigma_0^2 + it)^{1/2}} e^{ik_0x} exp \left[ - \frac{(x-x_0-k_0t)^2}{2\sigma_0^2 + 2it}\right]
+\end{equation}
+
+where $\phi \equiv -\theta -k_0^2t/2$ and $\tan \theta = t/\sigma_0$. By comparing this analytial solution to the one obtained by the numerical solution one can determine the validity and and stability of the numerical algorithm.
+
+\subsection{The potential well}
+
+Changing the potential to
+
+\begin{equation}
+  \label{eq:pot-well}
+  V(x) = \begin{cases}
+    -V_0 & \quad , |x|<a \\
+    0 & \quad, \text{else}
+  \end{cases}
+\end{equation}
+
+yields a more interesting case, with $V_0$ being a positive constant. Outside of the well the wave will propagate as a free particle (Eq. \eqref{eq:free}) but when it hits the well it will either transmit through or reflect back. Since the wavefunction corresponds to a probability it can be shown that the probability of transmittance and reflectance will depend on the energy of the wave, and hence depend on the central wavenumber $k_0$. Namely that
+
+\begin{equation}
+  \label{eq:well-T}
+  T = \frac{1}{ \left( 1+ [V_0^2 /4 E (E+V_0)]\sin^2(2a\sqrt{2m(E+V_0)/\hbar^2})    \right)  },
+\end{equation}
+
+where $E =\hbar^2 k_0^2/2m$ is the average energy of the particle. Now $T$ is the probability of the particle being transmitted through the well and similarly $R=1-T$ is the probability of reflectance. Looking at Eq. \ref{eq:well-T} on can see that it will resonate with the potential well and have maximum when
+
+\begin{equation}
+  \label{eq:resonance}
+  2a\sqrt{\frac{2m(E+V_0)}{\hbar^2}} = n \pi, \quad n= 1,2,...
+\end{equation}
+
+This could be viewed as standing waves in the potential well, making it transparent to the wave packet.
+
+
+\subsection{The potential barrier}
+
+Changing the sign of $V_0$ in Eq. \eqref{eq:pot-well} yields a potential barrier. Now the intuitive solution would be that the the quantum particle would bounce on the barrier but in quantum mechanics, there is always a probability of transmittance, regardless of the energy of the particle. This is called tunneling. If the energy of the particle is less than the energy of the barrier, the transmission coefficient will be the same as Eq. \eqref{eq:well-T} but with a change of sign from $V_0$ to $-V_0$. If the energy is larger than the barrier height, the transmission coefficient will be
+
+\begin{equation}
+  \label{eq:barr-T}
+  T = \frac{1}{ \left( 1+ [V_0^2/4E(V_0-E)]\sinh^2 (2a\sqrt{2m(V_0-E)/\hbar^2})   \right)  }.
+\end{equation}
+
+The wavenumber corresponding to the energy of the potential barrier is $k_V = \sqrt{2mV_0/\hbar^2}$.

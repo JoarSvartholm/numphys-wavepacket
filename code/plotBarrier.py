@@ -20,27 +20,31 @@ V0 = 1
 a = 0.01
 V = 0*(abs(xx)>=a)+ V0*(abs(xx)<a)
 
-x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_barrier_wave_k0_200.dat",unpack=True,skip_header=True)
+x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_barrier_wave_k0_180.dat",unpack=True,skip_header=True)
 
+m = np.max(np.abs(psi02))
 plt.figure("Potential Well")
-plt.plot(x,psi2,label="Numerical solution")
-#plt.plot(x,psiR,label="REal")
-#plt.plot(x,psiI,label="imag")
-#plt.plot(xx,abs(psiEnd)**2,'--',label="Analytic solution")
-plt.plot(xx,psi02,label="Initial wavefunction")
-plt.plot(xx,V,label="Potential")
-#plt.xlim(-4,4)
+plt.plot(x,psi2/m,label="Numerical solution")
+plt.plot(xx,psi02/m,label="Initial wavefunction")
+plt.plot(xx,V/m,label="Potential")
+plt.xlim(-3,3)
+plt.xlabel("x")
+plt.ylabel("$\Psi$ [Normalized]")
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/pot-barrier.pdf")
+    plt.savefig("../figs/pot-barrier-wave.pdf")
 
 
-t,R,T = np.genfromtxt("../data/pot_barrier_RT_k0_200.dat",unpack=True,skip_header=True)
+t,R,T = np.genfromtxt("../data/pot_barrier_RT_k0_180.dat",unpack=True,skip_header=True)
 
 plt.figure("relfection transmission")
-plt.plot(t,R,label="Reflection coefficient")
-plt.plot(t,T,label="Transmission coefficient")
+plt.plot(t,R,label="$R$")
+plt.plot(t,T,label="$T$")
+plt.xlabel("t [s]")
+plt.xlim(0,0.01)
 plt.legend()
+if savePlots:
+    plt.savefig("../figs/pot-barrier-RT.pdf")
 
 kk= np.linspace(150,350,100)
 k = np.linspace(150,199.99,100)
@@ -63,16 +67,19 @@ Rint = interp1d(k0,R,kind="cubic")
 Tint = interp1d(k0,T,kind="cubic")
 
 plt.figure("RT vs k0")
-plt.plot(kk,Rint(kk),'b-',label="Reflection")
+plt.plot(kk,Rint(kk),'b-',label="$R_{num}$")
 plt.plot(k0,R,'bo')
 plt.plot(k0,T,'ro')
-plt.plot(kk,Tint(kk),'r-',label="Transmission")
-plt.plot(k,Tana,color=(0.3,0.6,0.8),label="aTransmission")
+plt.plot(kk,Tint(kk),'r-',label="$T_{num}$")
+plt.plot(k,Tana,color=(0.3,0.6,0.8),label="$T_{analytic}$")
 plt.plot(k2,Tana2,color=(0.3,0.6,0.8))
-plt.plot(k,Ranal,color=(0.1,0.7,0),label="aReflection")
+plt.plot(k,Ranal,color=(0.1,0.7,0),label="$R_{analytic}$")
 plt.plot(k2,Ranal2,color=(0.1,0.7,0))
-plt.axvline(200)
+plt.axvline(200,label="$k_V$")
+plt.xlabel("$k_0$ [1/m]")
 plt.legend()
+if savePlots:
+    plt.savefig("../figs/pot-barrier-RTk0.pdf")
 
 if showPlots:
     plt.show()

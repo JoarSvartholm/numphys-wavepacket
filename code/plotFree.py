@@ -22,18 +22,22 @@ plt.figure("free particle")
 plt.plot(x,psi2,label="Numerical solution")
 plt.plot(xx,abs(psiEnd)**2,'--',label="Analytic solution")
 plt.plot(xx,psi02,label="Initial wavefunction")
-plt.xlim(-4,4)
+plt.xlim(-3,3)
+plt.ylabel(r"$|\Psi|^{2}$")
+plt.xlabel("x")
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/free-part.pdf")
+    plt.savefig("../figs/free-part-norm2.pdf")
 
 plt.figure("imag part")
 plt.plot(x,psiI,label="Numerical solution")
 plt.plot(xx,psiEnd.imag,'--',label="Analytic solution")
 plt.xlim(-0.5,0.35)
+plt.ylabel(r"$\mathfrak{Im}(\Psi)$")
+plt.xlabel("x")
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/free-part-imag.pdf")
+    plt.savefig("../figs/free-part-im.pdf")
 
 if showPlots:
     plt.show()
