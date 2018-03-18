@@ -48,7 +48,7 @@ void user_observe (const parameters, const double,
 
 void initialize_hamiltonian(const parameters,gsl_matrix_complex *);
 
-void hamiltonian_operator( const parameters ,gsl_vector_complex *, gsl_vector_complex *, gsl_complex );
+void hamiltonian_operator( const parameters ,gsl_vector_complex *, gsl_vector_complex *);
 
 void
 print_wf2 (const parameters params, gsl_vector_complex *psi,

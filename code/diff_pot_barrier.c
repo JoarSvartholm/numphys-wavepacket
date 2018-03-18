@@ -97,8 +97,10 @@ initialize_wf (const parameters params, const int argc, char ** const argv,
 		 double k0 = atof(argv[argc-1]);
 
 		 for(size_t i = 0; i < params.nx_local; i++){
-			 double complex psiTemp = pow(1./(M_PI*sigma0*sigma0),0.25)*(cos(k0*params.x[i])+ I*sin(k0*params.x[i]))*exp(-(params.x[i]-x0)*(params.x[i]-x0)/(2.*sigma0*sigma0));
-			 gsl_complex temp = gsl_complex_rect(creal(psiTemp),cimag(psiTemp));
+
+			 double psiReal = pow(1./(M_PI*sigma0*sigma0),0.25)*exp(-(params.x[i]-x0)*(params.x[i]-x0)/(2.*sigma0*sigma0))*cos(k0*params.x[i]);
+			 double psiImag = pow(1./(M_PI*sigma0*sigma0),0.25)*exp(-(params.x[i]-x0)*(params.x[i]-x0)/(2.*sigma0*sigma0))*sin(k0*params.x[i]);
+			 gsl_complex temp = gsl_complex_rect(psiReal,psiImag);
 			 gsl_vector_complex_set(psi,i,temp);
 		 }
 
@@ -171,33 +173,47 @@ void initialize_hamiltonian(const parameters params, gsl_matrix_complex *H){
 
 }
 
-void hamiltonian_operator(const parameters params, gsl_vector_complex *psi, gsl_vector_complex *Hpsi, gsl_complex alpha){
+void hamiltonian_operator(const parameters params, gsl_vector_complex *psi, gsl_vector_complex *Hpsi){
 
-	gsl_complex H0,H1,psi0,psi1,psi2,a1,a2,a3;
-	double hbar = params.hbar;
+	double htmx2,th;
+	double Hii,Hi1;
+	gsl_complex Hp1,Hp2,Hp3;
 	extern double *V;
-	GSL_SET_COMPLEX(&H1,-hbar*hbar/(2.*params.dx*params.dx),0);
-	GSL_SET_COMPLEX(&H0,hbar*hbar/(params.dx*params.dx)+V[0],0);
+	int N = params.nx_local;
 
-	gsl_vector_complex_set(Hpsi,0,gsl_complex_add(gsl_complex_mul(gsl_vector_complex_get(psi,0),H0),gsl_complex_mul(gsl_vector_complex_get(psi,1),H1)));
-	for(int i=1;i<params.nx-1;i++){
-		GSL_SET_COMPLEX(&H0,hbar*hbar/(params.dx*params.dx)+V[i],0);
+	htmx2 = params.hbar*params.dt/(params.mass*params.dx*params.dx);
+	th = params.dt/params.hbar;
 
-		psi0 = gsl_vector_complex_get(psi,i-1);
-		psi1 = gsl_vector_complex_get(psi,i);
-		psi2 = gsl_vector_complex_get(psi,i+1);
+	Hi1 = -0.5*htmx2;
+	Hii = htmx2 + th*V[0];
 
-		a1 =gsl_complex_mul(psi0,H1);
-		a2 =gsl_complex_mul(psi1,H0);
-		a3 =gsl_complex_mul(psi2,H1);
+	Hp2 = gsl_complex_mul_real(gsl_vector_complex_get(psi,0),Hii);
+	Hp3 = gsl_complex_mul_real(gsl_vector_complex_get(psi,1),Hi1);
 
-		gsl_vector_complex_set(Hpsi,i,gsl_complex_add(a1,gsl_complex_add(a2,a3)));
+	//Set first element
+	gsl_vector_complex_set(Hpsi,0,gsl_complex_add(Hp2,Hp3));
+
+	for(size_t i=1;i<N-1;i++){
+		Hii = htmx2 + th*V[i];
+
+		//Compute sum elements
+		Hp1 = gsl_complex_mul_real(gsl_vector_complex_get(psi,i-1),Hi1);
+		Hp2 = gsl_complex_mul_real(gsl_vector_complex_get(psi,i),Hii);
+		Hp3 = gsl_complex_mul_real(gsl_vector_complex_get(psi,i+1),Hi1);
+
+		//Set element i
+		gsl_complex temp = gsl_complex_add(Hp1,Hp2);
+		gsl_vector_complex_set(Hpsi,i,gsl_complex_add(temp,Hp3));
 	}
-		GSL_SET_COMPLEX(&H0,hbar*hbar/(params.dx*params.dx)+V[params.nx-1],0);
 
-		psi0 = gsl_vector_complex_get(psi,params.nx-1);
-		psi1 = gsl_vector_complex_get(psi,params.nx-2);
-		gsl_vector_complex_set(Hpsi,params.nx-1,gsl_complex_add(gsl_complex_mul(psi0,H0),gsl_complex_mul(psi1,H1)));
+	Hii = htmx2 + th*V[N-1];
+
+	Hp1 = gsl_complex_mul_real(gsl_vector_complex_get(psi,N-2),Hi1);
+	Hp2 = gsl_complex_mul_real(gsl_vector_complex_get(psi,N-1),Hii);
+
+	//Set last element
+	gsl_vector_complex_set(Hpsi,N-1,gsl_complex_add(Hp1,Hp2));
+
 
 		/*for(int i=0;i<params.nx;i++){
 			psi0 = gsl_vector_complex_get(Hpsi,i);

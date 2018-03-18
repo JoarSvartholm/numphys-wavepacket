@@ -36,50 +36,51 @@ int main(int argc, char *argv[]) {
   make_grid (&params);
 
   //Stepping constant
-  gsl_complex idt2_hbar;
-  GSL_SET_COMPLEX(&idt2_hbar,0,- 2.*params.dt / params.hbar);
-  gsl_complex idt_hbar2m;
-  GSL_SET_COMPLEX(&idt_hbar2m,0,- params.dt /( params.hbar*2.));
-  gsl_complex idt_hbar2p;
-  GSL_SET_COMPLEX(&idt_hbar2p,0,params.dt /( params.hbar*2.));
+  gsl_complex HALF_BACK;
+  GSL_SET_COMPLEX(&HALF_BACK,0.,0.5);
+  gsl_complex HALF_FWD;
+  GSL_SET_COMPLEX(&HALF_FWD,0.,-0.5);
+  gsl_complex FWD_STEP;
+  GSL_SET_COMPLEX(&FWD_STEP,0.,-2.0);
 
   //Create array for wavefunction
   gsl_vector_complex *psi = gsl_vector_complex_alloc(params.nx);
   gsl_vector_complex *Hpsi = gsl_vector_complex_alloc(params.nx);
   gsl_vector_complex *psi1 = gsl_vector_complex_alloc(params.nx);
-  //gsl_matrix_complex *H = gsl_matrix_complex_alloc(params.nx,params.nx);
 
   initialize_wf(params,argc,argv,psi);
+  initialize_wf(params,argc,argv,psi1);
 
     double norm =gsl_blas_dznrm2(psi);
     printf("%.10e\n",norm*norm );
 
   initialize_potential (params, argc, argv);
-  //initialize_hamiltonian(params,H);
+
+  //Generate symmetric IC
+  //back euler step
+  hamiltonian_operator(params,psi1,Hpsi);
+  gsl_blas_zaxpy(HALF_BACK,Hpsi,psi1);
+    norm =gsl_blas_dznrm2(psi1);
+    printf("%.10e\n",norm*norm );
+  //forward euler step
+  hamiltonian_operator(params,psi,Hpsi);
+  gsl_blas_zaxpy(HALF_FWD,Hpsi,psi);
+    norm =gsl_blas_dznrm2(psi);
+    printf("%.10e\n",norm*norm );
 
   //Main loop
-  //back euler step
-  gsl_blas_zcopy(psi,psi1);
-  hamiltonian_operator(params,psi1,Hpsi,idt_hbar2p);
-  gsl_blas_zaxpy(idt_hbar2p,Hpsi,psi1);
-  //forward euler step
-  hamiltonian_operator(params,psi,Hpsi,idt_hbar2m);
-  gsl_blas_zaxpy(idt_hbar2m,Hpsi,psi);
-
-  for(int i = 0;i<nt_inner;i++){
-    hamiltonian_operator(params,psi,Hpsi,idt2_hbar);
-
-    gsl_blas_zaxpy(idt2_hbar,Hpsi,psi1);
-    gsl_blas_zcopy(psi1,Hpsi);
-    gsl_blas_zcopy(psi,psi1);
-    gsl_blas_zcopy(Hpsi,psi);
-
-
-
-    double norm =gsl_blas_dznrm2(psi);
-    printf("%.10e\n",norm*norm );
+  for(int i = 0;i<nt_outer;i++){
+    for(int j = 0; j<nt_inner;j++){
+      //take full step
+      hamiltonian_operator(params,psi,Hpsi);
+      gsl_blas_zaxpy(FWD_STEP,Hpsi,psi1);
+      //prepare for next iteration (put psi as current step and psi1 as previous)
+      gsl_blas_zswap(psi1,psi);
+    }
+    //Print some results
+    norm =gsl_blas_dznrm2(psi);
+    printf("%f\n",norm );
   }
-
 
 
   //free variables
