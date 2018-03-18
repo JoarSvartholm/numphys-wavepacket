@@ -36,50 +36,42 @@ int main(int argc, char *argv[]) {
   make_grid (&params);
 
   //Stepping constant
-  gsl_complex HALF_BACK;
-  GSL_SET_COMPLEX(&HALF_BACK,0.,0.5);
-  gsl_complex HALF_FWD;
-  GSL_SET_COMPLEX(&HALF_FWD,0.,-0.5);
-  gsl_complex FWD_STEP;
-  GSL_SET_COMPLEX(&FWD_STEP,0.,-2.0);
+  double complex HALF_BACK = 0.5*I;
+  double complex HALF_FWD = -0.5*I;
+  double complex FWD_STEP = -2.*I;
 
   //Create array for wavefunction
-  gsl_vector_complex *psi = gsl_vector_complex_alloc(params.nx);
-  gsl_vector_complex *Hpsi = gsl_vector_complex_alloc(params.nx);
-  gsl_vector_complex *psi1 = gsl_vector_complex_alloc(params.nx);
+  double complex *psi;
+  psi = (double complex *) malloc (params.n_local * sizeof (double complex));
+  double complex *Hpsi;
+  Hpsi = (double complex *) malloc (params.n_local * sizeof (double complex));
+  double complex *psi1;
+  psi1 = (double complex *) malloc (params.n_local * sizeof (double complex));
 
   initialize_wf(params,argc,argv,psi);
   initialize_wf(params,argc,argv,psi1);
 
-    double norm =gsl_blas_dznrm2(psi);
-    printf("%.10e\n",norm*norm );
 
   initialize_potential (params, argc, argv);
 
   //Generate symmetric IC
   //back euler step
   hamiltonian_operator(params,psi1,Hpsi);
-  gsl_blas_zaxpy(HALF_BACK,Hpsi,psi1);
-    norm =gsl_blas_dznrm2(psi1);
-    printf("%.10e\n",norm*norm );
+  take_step(HALF_BACK,Hpsi,psi1,params);
   //forward euler step
   hamiltonian_operator(params,psi,Hpsi);
-  gsl_blas_zaxpy(HALF_FWD,Hpsi,psi);
-    norm =gsl_blas_dznrm2(psi);
-    printf("%.10e\n",norm*norm );
+  take_step(HALF_FWD,Hpsi,psi,params);
 
   //Main loop
   for(int i = 0;i<nt_outer;i++){
     for(int j = 0; j<nt_inner;j++){
       //take full step
       hamiltonian_operator(params,psi,Hpsi);
-      gsl_blas_zaxpy(FWD_STEP,Hpsi,psi1);
+      take_step(FWD_STEP,Hpsi,psi1,params);
       //prepare for next iteration (put psi as current step and psi1 as previous)
-      gsl_blas_zswap(psi1,psi);
+      swap_vectors(psi1,psi,params);
     }
     //Print some results
-    norm =gsl_blas_dznrm2(psi);
-    printf("%f\n",norm );
   }
 
 
@@ -103,9 +95,9 @@ int main(int argc, char *argv[]) {
 
 
   // Finish clean up
-  gsl_vector_complex_free (psi);
-  gsl_vector_complex_free (Hpsi);
-  gsl_vector_complex_free (psi1);
+  free (psi);
+  free (Hpsi);
+  free (psi1);
 
   free (params.x);
   free (params.y);
@@ -741,7 +733,7 @@ read_parameters (parameters * const params, output_flags * const output,
 
 //print functions
 void
-print_wf2 (const parameters params, gsl_vector_complex *psi,
+print_wf2 (const parameters params, double complex *psi,
 	  const char * const wf_text)
 {
   /** Print out the wave function psi in a text file **/
@@ -794,8 +786,8 @@ print_wf2 (const parameters params, gsl_vector_complex *psi,
 		  if (print_z)
 		    fprintf (fp, "%13.6e ", params.z[k]);
 
-		  double psiR = GSL_REAL (gsl_vector_complex_get(psi,index));
-      double psiI = GSL_IMAG (gsl_vector_complex_get(psi,index));
+		  double psiR = creal(psi[index]);
+      double psiI = cimag(psi[index]);
       double psi2 = psiR*psiR + psiI*psiI;
 		  fprintf (fp, "%13.6e %13.6e %.6e\n",
 			   psiR,psiI, psi2);

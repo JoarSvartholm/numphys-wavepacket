@@ -32,7 +32,7 @@ void initialize_potential (const parameters, const int, char ** const);
 void initialize_user_observe (const parameters, const int, char ** const);
 
 void initialize_wf (const parameters, const int, char ** const,
-		    gsl_vector_complex *);
+		    double complex *);
 
 double complex integrate3D (const parameters, const double complex * const,
 			    const double complex * const);
@@ -48,10 +48,14 @@ void user_observe (const parameters, const double,
 
 void initialize_hamiltonian(const parameters,gsl_matrix_complex *);
 
-void hamiltonian_operator( const parameters ,gsl_vector_complex *, gsl_vector_complex *);
+void hamiltonian_operator( const parameters ,double complex *, double complex *);
+
+void take_step(double complex ,double complex *, double complex *,parameters );
+
+void swap_vectors(double complex *,double complex *,parameters );
 
 void
-print_wf2 (const parameters params, gsl_vector_complex *psi,
+print_wf2 (const parameters params, double complex *psi,
 	  const char * const wf_text);
 
 #endif /* __WAVEPACKET__ */
