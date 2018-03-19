@@ -1,0 +1,39 @@
+\section{Method}
+\label{sec:method of stuff}
+
+In order to study the quantum particle using the methods in Sec. \ref{sec:Theory} the program called \verb|wavepacket| was used \cite{wavepacket}. First, the initial wavefunction was implemented together with a zero potential and the wave was simulated for $6.8 \cdot 10^{-3}$s using $k_0 = 200$ and the resulting wave was analyzed. Next, the potential was replaced with a potential well. For this case simulations was done for different inital wavenumbers from 250 to 350 in steps of 10 in order to find a relation of the reflection and transmission coefficients and thus be able to verify Eq. \eqref{eq:well-T}. The reflection and transmission coefficients was computed as
+
+\begin{equation}
+  \label{eq:RTnumerical}
+  \begin{split}
+    R &= \int_{-\infty}^{-a}|\psi(x,t)|^2\dn x \approx 0.5\psi(x=-8,t) + \sum_{i=1}^{x(i)<-a} \psi(x=-8+i\Delta x,t) + 0.5\psi(x=-a,t)\\
+    T &= \int_{a}^{\infty}|\psi(x,t)|^2\dn x \approx 0.5\psi(x=a,t) + \sum_{x(i)>a}^{x(i)<8} \psi(x=a+i\Delta x,t) + 0.5\psi(x=8,t)\\
+  \end{split}
+\end{equation}
+
+The final coefficients of each simulation was then used to plot $R,T$ against the wavenumber.
+
+The same study was then done with the potential changed to a barrier instead of a well.
+
+As a final study the numerical algorithm was changed and the program \verb|diffScheme| was used. The same results as with the potential barrier was produced and the two algorithms was compared by the means of excecution time. In order to make a fair comparison both programs produced the same output and was set to the same simulated time in means of seconds.
+
+\subsection{wavepacket.c}
+
+The program \verb|wavepacket| is a simulation program for quantum particles using the split-operator method described in Sec. \ref{sec:splitOp}. The program was used with different potentials yielding different executable files. There three potentials can be compiled using either of the commands
+
+\begin{itemize}
+  \item \verb|make freepart|
+  \item \verb|make potwell|
+  \item \verb|make barrier|
+\end{itemize}
+
+for the free particle, potential well and potential barrier correspondingly. The program uses \verb|FFTW| in order to compute the fourier transforms so this library must be installed in order to compile the program correctly.
+
+The simulations are then executed by adding and argument file containing the parameters (preferrably the template file in the appendix \ref{App:input}) and an argument with the initial wavenumber. If the input file is found in a folder called \verb|input_files| then a simulation for the potential well using $k_0=200$ could be excetuted using the line
+
+\verb|./potwell input_files/pot_well_template.in 200|
+
+\subsection{waveDiff.c}
+\label{sec:diffScheme}
+
+The program implementing the second-order differencing scheme is called \verb|waveDiff| and can be compiled by the command \verb|make diffScheme|. No external libraries was used in the implementation of this code. The same datatypes and general funcitons (e.g. the routine for reading parameters and printing results) as in \verb|wavepacket| was used in order to be able to compare the computation times. A similar command can be used to execute a simulation using this program. Note however that the time step used must be about $5\cdot 10^{-8}$ in order to achieve convergence.

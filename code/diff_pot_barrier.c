@@ -15,10 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_complex.h>
-#include <gsl/gsl_complex_math.h>
 
 #include "wavediff.h"
 
@@ -117,7 +113,7 @@ initialize_user_observe (const parameters params, const int argc,
 
 
 	char fname[60];
-	sprintf(fname,"../data/pot_barrier_RT_k0_%s.dat",argv[argc-1]);
+	sprintf(fname,"../data/diff_barrier_RT_k0_%s.dat",argv[argc-1]);
 	fp_user = fopen(fname,"w+");
 
   fprintf(fp_user, "t    R    T\n");
@@ -151,26 +147,6 @@ user_observe (const parameters params, const double t,
   return;
 }
 
-void initialize_hamiltonian(const parameters params, gsl_matrix_complex *H){
-
-	double hbar = params.hbar;
-	extern double *V;
-
-	gsl_complex H1;
-	gsl_complex H0;
-	GSL_SET_COMPLEX(&H1,-hbar*hbar/(2.*params.dx*params.dx),0);
-
-
-    gsl_matrix_complex_set(H,0,1,H1);
-  for(int i=1;i<params.nx-1;i++){
-		GSL_SET_COMPLEX(&H0,hbar*hbar/(params.dx*params.dx)+V[i],0);
-    gsl_matrix_complex_set(H,i,i,H0);
-    gsl_matrix_complex_set(H,i,i+1,H1);
-    gsl_matrix_complex_set(H,i,i-1,H1);
-  }
-    gsl_matrix_complex_set(H,params.nx-1,params.nx-2,H1);
-
-}
 
 void hamiltonian_operator(const parameters params, double complex *psi, double complex *Hpsi){
 

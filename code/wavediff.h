@@ -3,7 +3,6 @@
 
 #include <complex.h>
 #include <stdbool.h>
-#include <gsl/gsl_spmatrix.h>
 
 /* Structures */
 
@@ -46,7 +45,6 @@ void renormalize (const parameters, double complex *);
 void user_observe (const parameters, const double,
 		   const double complex * const);
 
-void initialize_hamiltonian(const parameters,gsl_matrix_complex *);
 
 void hamiltonian_operator( const parameters ,double complex *, double complex *);
 

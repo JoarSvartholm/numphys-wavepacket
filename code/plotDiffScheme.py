@@ -20,7 +20,7 @@ V0 = 1
 a = 0.01
 V = 0*(abs(xx)>=a)+ V0*(abs(xx)<a)
 
-x,psiR,psiI,psi2 = np.genfromtxt("../data/diffscheme_test.dat",unpack=True,skip_header=True)
+x,psiR,psiI,psi2 = np.genfromtxt("../data/diff_barrier_wave_k0_150.dat",unpack=True,skip_header=True)
 
 plt.figure("Potential Well")
 plt.plot(x,psi2,label="Numerical solution")
@@ -35,7 +35,7 @@ if savePlots:
     plt.savefig("../figs/pot-barrier.pdf")
 
 
-t,R,T = np.genfromtxt("../data/pot_barrier_RT_k0_200.dat",unpack=True,skip_header=True)
+t,R,T = np.genfromtxt("../data/diff_barrier_RT_k0_150.dat",unpack=True,skip_header=True)
 
 plt.figure("relfection transmission")
 plt.plot(t,R,label="Reflection coefficient")
@@ -57,15 +57,18 @@ E = k2**2/2
 Tana2 = 1/(1+(V0**2/(4*E*(E-V0)))*(np.sin(2*a*np.sqrt(2*(E-V0))))**2)
 Ranal2 = 0*k -Tana2+1
 
-k0,t,R,T = np.genfromtxt("../data/pot_barrier_RT_all.dat",unpack=True)
+k0,t,R,T = np.genfromtxt("../data/diff_RT_all.dat",unpack=True)
+k0,t,R2,T2 = np.genfromtxt("../data/pot_barrier_RT_all.dat",unpack=True)
 
 Rint = interp1d(k0,R,kind="cubic")
 Tint = interp1d(k0,T,kind="cubic")
 
 plt.figure("RT vs k0")
 plt.plot(kk,Rint(kk),'b-',label="Reflection")
-plt.plot(k0,R,'bo')
-plt.plot(k0,T,'ro')
+plt.plot(k0,R,'b.')
+plt.plot(k0,T,'r.')
+plt.plot(k0,R2,'b*')
+plt.plot(k0,T2,'r*')
 plt.plot(kk,Tint(kk),'r-',label="Transmission")
 plt.plot(k,Tana,color=(0.3,0.6,0.8),label="aTransmission")
 plt.plot(k2,Tana2,color=(0.3,0.6,0.8))
@@ -73,6 +76,15 @@ plt.plot(k,Ranal,color=(0.1,0.7,0),label="aReflection")
 plt.plot(k2,Ranal2,color=(0.1,0.7,0))
 plt.axvline(200)
 plt.legend()
+
+E = k0**2/2
+Tana2 = 1/(1+(V0**2/(4*E*(E-V0)))*(np.sin(2*a*np.sqrt(2*(E-V0))))**2)
+Ranal2 = 0*k0 -Tana2+1
+plt.figure("error")
+plt.plot(k0,R-Ranal2)
+plt.plot(k0,R2-Ranal2)
+plt.plot(k0,T-Tana2)
+plt.plot(k0,T2-Tana2)
 
 if showPlots:
     plt.show()

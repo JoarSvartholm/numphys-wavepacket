@@ -1,5 +1,6 @@
 \newpage
 \section{Theory}
+\label{sec:Theory}
 
 The dynamics of a quantum particle is described by the time dependent Schrödinger equation
 
@@ -25,6 +26,7 @@ the sum of the kinetic and potential operator. In this equation, $m$ is the mass
 for any small step size $\Delta t$. The problem with this naive solution is that taking the exponential of an operator is non-trivial.
 
 \subsection{Split operator method}
+\label{sec:splitOp}
 
 One way to get around this is by noting that the kinetic operator includes a second derivative in position space but a a simple multiplication in momentum space. Namely that
 
@@ -42,10 +44,50 @@ This motivates the splitting of the hamilton operator into two parts, taking the
 where $\hat{T_p}$ denotes the kinetic operator in momentum space and $\mathcal F$ and $\mathcal F^{-1}$ denotes the direct and inverse fourier transform to go from position space to momentum space and vice versa. Note that the potential operator is also split into two parts in order to make the operation unitary and thus reversible.
 
 \subsection{Second-order differencing}
+\label{sec:secondDiff}
+
+Another approach to this problem is to make a taylor expansion of the exponential. By doing this in one direction and again in the other and taking the difference yields the Second-order differencing method. Namely by subtracting
+
+\begin{equation}
+  \begin{split}
+    \psi(t+\Delta t) &= e^{-\frac{i\Delta t}{\hbar}\hat{H}}\psi(t) \\
+    \psi(t-\Delta t) &= e^{\frac{i\Delta t}{\hbar}\hat{H}}\psi(t) \\
+  \end{split}
+\end{equation}
+
+to get
+
+\begin{equation}
+  \psi(t+\Delta t) - \psi(t-\Delta t) = (e^{-\frac{i\Delta t}{\hbar}\hat{H}}-e^{\frac{i\Delta t}{\hbar}\hat{H}})\psi(t).
+\end{equation}
+
+By expanding the exponentials we get
+
+\begin{equation}
+  \begin{split}
+    e^{-\frac{i\Delta t}{\hbar}\hat{H}} &=1 - \frac{i\Delta t}{\hbar}\hat H - \frac{\Delta t^2}{2 \hbar^2}\hat H^2 + \frac{i \Delta t^3}{3! \hbar^3}\hat H^3 + \mathcal O(\Delta t^4) \\
+    e^{\frac{i\Delta t}{\hbar}\hat{H}} &=1 + \frac{i\Delta t}{\hbar}\hat H - \frac{\Delta t^2}{2 \hbar^2}\hat H^2 - \frac{i \Delta t^3}{3! \hbar^3}\hat H^3 + \mathcal O(\Delta t^4) \\
+  \end{split}
+\end{equation}
+
+which leads to
+
+\begin{equation}
+   (e^{-\frac{i\Delta t}{\hbar}\hat{H}}-e^{\frac{i\Delta t}{\hbar}\hat{H}})\psi(t) = - \frac{2i\Delta t}{\hbar}\hat H + \mathcal O(\Delta t^3).
+\end{equation}
+
+This means that the update scheme for this method can be written as
+
+\begin{equation}
+  \label{eq:diffScheme}
+  \psi(t+\Delta t) = -\frac{2i\Delta t}{\hbar}\hat H \psi(t) + \psi(t-\Delta t).
+\end{equation}
+
+The man difficulty with this method is that two previous values are needed in order to start the sequence. A common solution to this is by taking one Euler step back in time in order to find $\psi_{-1}$. More about how this was implemented is found in the method section, Sec. \ref{sec:diffScheme}.
 
 \subsection{The free particle}
 
-In order to study the numerical algorithms for something more interesting it is good to first try them on something with a known solution. Consider the initial gaussian wavefunction with central wavenumber $k_0$ and width $2\sigma_0^2$
+In order to study the numerical algorithms it is good to first try them on something with a known solution. Consider the initial gaussian wavefunction with central wavenumber $k_0$ and width $2\sigma_0^2$
 
 \begin{equation}
   \label{eq:init}

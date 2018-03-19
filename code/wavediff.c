@@ -4,11 +4,6 @@
 #include "wavediff.h"
 #include "wavepacket_private.h"
 
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_complex.h>
-#include <gsl/gsl_blas.h>
-
 int main(int argc, char *argv[]) {
 
   size_t alloc_local;
@@ -18,9 +13,6 @@ int main(int argc, char *argv[]) {
   output_flags output;
   char results_file[80], wf_text[80], wf_bin[80];
   FILE *fp_results;
-  gsl_complex a;
-  a.dat[0]=1;
-  a.dat[1]=0;
 
   read_parameters (&params, &output, &nt_inner, &nt_outer, argv[1], results_file, wf_text, wf_bin);
 
@@ -48,6 +40,8 @@ int main(int argc, char *argv[]) {
   double complex *psi1;
   psi1 = (double complex *) malloc (params.n_local * sizeof (double complex));
 
+  initialize_user_observe (params, argc, argv);
+
   initialize_wf(params,argc,argv,psi);
   initialize_wf(params,argc,argv,psi1);
 
@@ -62,6 +56,9 @@ int main(int argc, char *argv[]) {
   hamiltonian_operator(params,psi,Hpsi);
   take_step(HALF_FWD,Hpsi,psi,params);
 
+  //Make initial observation
+  t = 0.5*params.dt;
+  if(output.yes) user_observe (params, t,psi);
   //Main loop
   for(int i = 0;i<nt_outer;i++){
     for(int j = 0; j<nt_inner;j++){
@@ -70,8 +67,10 @@ int main(int argc, char *argv[]) {
       take_step(FWD_STEP,Hpsi,psi1,params);
       //prepare for next iteration (put psi as current step and psi1 as previous)
       swap_vectors(psi1,psi,params);
+      t+=params.dt;
     }
     //Print some results
+	  if(output.yes) user_observe (params, t,psi);
   }
 
 

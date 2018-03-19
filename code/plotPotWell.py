@@ -20,7 +20,7 @@ V0 = -1
 a = 0.04
 V = 0*(abs(xx)>=a)+ V0*(abs(xx)<a)
 
-x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_well_wave_k0_280.dat",unpack=True,skip_header=True)
+x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_well_wave_k0_170.dat",unpack=True,skip_header=True)
 
 m = np.max(np.abs(psi02))
 plt.figure("Potential Well")
