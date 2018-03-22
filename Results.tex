@@ -1,5 +1,7 @@
 \section{Results}
 
+As a first test, a wavefunction starting at $x_0=-2$ with width $\sigma_0=0.1$ and central wavenumber $k_0=200$ was simulated for $6.8 \cdot 10^{-3}$s using a zero-potential. The resulting wavefunction is found in Fig. \ref{fig:free-norm}. In the figure, the analytical result from Eq. \eqref{eq:free} is also plotted in order to see any discrepancies in the result. As seen in the figure, the numerical result correspond well to the analytical and thus, the numerical model seem valid. In order to further prove this, the imaginary part of the numerical and analytical wavefunction is plotted in Fig. \ref{fig:free-imag}. The solutions match well also in this figure, and further analysis of other potentials are now possible.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{../wavepacket/figs/free-part-norm2}
@@ -14,19 +16,41 @@
   \label{fig:free-imag}
 \end{figure}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{../wavepacket/figs/pot-well-wave}
-  \caption{Numerical solution of the time dependent schrödinger equation of the potential well.}
-  \label{fig:well-wave}
-\end{figure}
+The potential was changed to the potential well in Eq. \eqref{eq:pot-well} with depth $V_0=10^{5}$ and width $a=0.04$. The wave started with central wavenumber $k_0 = 170$ and $280$ and the resulting wavefunctions are plotted in Fig. \ref{fig:well-wave}. In the figure, the waves are normalized to the initial wavefunction and the potential is in the figure but not to scale. For these waves, the reflection and transmission coefficients was computed and is found in Fig. \ref{fig:well-RT}. The reflection coefficient starts at unity and decreases when the wave hits the well and then settles on a value which is taken as the true reflection coefficient. The same applies for the transmission coefficient. It is interesting to see in Fig. \ref{fig:well-wave} that the wave in split into two, where one has passed through the well and one is reflected. It is thus a matter of probability of where the particle is after hitting the well. This means that if several particles is sent through a well like this, a percentage of them will be reflected and the rest will be transmitted. The result is thus not to be interpreted as the particle is actually being split into two rather than it is more probable that the particle will pass through. Noting from Fig. \ref{fig:well-RT} that the coefficients are different for different initial wavenumber leads us to the next analysis.
+
+Running simulations for particles with wavenumbers from $k_0 = 150$ to $k_0 = 350$ in steps of 10, collecting the resulting reflection and transmission coefficients and plotting them together with the analytic expression Eq. \eqref{eq:well-T} yields Fig. \ref{fig:well-k0}. The numerical values has been interpolated using cubic splines in order to see the bahaviour more clearly. In the figure, the resonating wavenumbers for Eq. \eqref{eq:resonance} has been added. The numerical values seem to have the same behaviour as the analytical but tend to undershoot the peaks of the analytical expression. The reason for this is that the analytical expression is based on a monochromatic wave consisting of only one wavenumber. This means that the wave will be resonating with the well perfectly for some wavenumbers and the transmission will be equal to one. Having the same central wavenumber in the numerical solution, only a fraction of the wavenumbers will be in perfect resonance with the well meaning that also a fraction will be reflected. This means that even though the numerical result does not match the analytical results perfeclty, it does not mean that the result is bad, only that the circumstances are different. It is also interesting to see in Fig. \ref{fig:well-k0} that the reflection coefficient tend to decrease with larger wavenumber. This makes sense since the wavenumber ralates to the energy of the particle, and with higher energy, the wave should more easily transmitt through the potential well.
+
+
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{../wavepacket/figs/pot-well-RT}
-  \caption{Reflection and transmission coefficient of the particle in Fig. \ref{fig:well-wave}.}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/pot-well-wave170}
+  \caption{$k_0 = 170$}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/pot-well-wave280}
+  \caption{$k_0 = 280$}
+  \end{subfigure}
+  \caption{Numerical solution of the time dependent schrödinger equation of the potential well. The potential in the figure is not to scale.}
+  \label{fig:well-wave}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/pot-well-RT170}
+  \caption{$k_0 = 170$}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/pot-well-RT280}
+  \caption{$k_0 = 280$}
+  \end{subfigure}
+  \caption{Reflection and transmission coefficient of the particles in Fig. \ref{fig:well-wave}.}
   \label{fig:well-RT}
 \end{figure}
+
 
 \begin{figure}[H]
   \centering
@@ -35,17 +59,38 @@
   \label{fig:well-k0}
 \end{figure}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{../wavepacket/figs/pot-barrier-wave}
-  \caption{Numerical solution of the time dependent schrödinger equation of the potential barrier.}
-  \label{fig:barrier-wave}
-\end{figure}
+In the next case, the potential barrier was replaced with a potential barrier of height $V_0=2 \cdot 10^4$ and witdh $a=0.01$. The same waves as in the previous test was simulated and is found together with the potential and the initial wavefunction in Fig. \ref{fig:barrier-wave}. In the figure, it seem like the wave is mostly reflected for the low wavenumber of $k_0=170$ and mostly transmitted for the high wavenumber case $k_0=280$. This can also be seen in Fig. \ref{fig:barrier-RT} where the reflection and transmission coefficients are plotted against time. In Fig. \ref{fig:barrier_RT170} the reflection coefficient has a slight dip when the wave is hitting the barrier. This might be due to numerical errors as the wave is ''inside'' the barrier. As with the potential well only the final values from these figures are important as it will reflect the probability of reflection of many particles hitting the barrier. The wavenumber corresponding to the height of the barrier is in this case $k_V = 200$ which makes Fig. \ref{fig:barrier_RT170} even more interesting. This tells us that even though the particle has less energy than what would be required to classically pass the barrier, there is a slight probability of getting through. This effect is known as tunneling and the result proves this remarkable quantum theory.
+
+Doing the same sweep of simulations, starting from $k_0 =150$ to $k_0 = 350$ in steps of ten gives Fig. \ref{fig:barrier-k0}. The analytical expression for the transmission coefficient Eq. \ref{eq:barr-T} is included in the figure. The wavenumber corresponding to the barrier height is marked as a line in the figure. In this case is seem like the numerical solution correspond even better to the analytical expression the for the potential well. The same phenomena occur however that the numerical result is undershooting the first extreme. It is interesting to see that close to $k_V$ the transmission coefficient increases rapidly which makes sense.
+
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{../wavepacket/figs/pot-barrier-RT}
-  \caption{Reflection and transmission coefficient for the particle in Fig. \ref{fig:barrier-wave}}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/pot-barrier-wave170}
+  \caption{$k_0 = 170$}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/pot-barrier-wave280}
+  \caption{$k_0 = 280$}
+  \end{subfigure}
+  \caption{Numerical solution of the time dependent schrödinger equation of the potential barrier. The potential in the figure is not to scale.}
+  \label{fig:barrier-wave}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/pot-barrier-RT170}
+  \caption{$k_0 = 170$}
+  \label{fig:barrier_RT170}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/pot-barrier-RT280}
+  \caption{$k_0 = 280$}
+  \end{subfigure}
+  \caption{Reflection and transmission coefficient of the particles in Fig. \ref{fig:barrier-wave}.}
   \label{fig:barrier-RT}
 \end{figure}
 
@@ -54,4 +99,53 @@
   \includegraphics[width=0.8\textwidth]{../wavepacket/figs/pot-barrier-RTk0}
   \caption{Reflection and transmission coefficient for different center wavenumbers used. $k_V$ is the wavenumber corresponding to the potential barrier height.}
   \label{fig:barrier-k0}
+\end{figure}
+
+
+As a final experiment the second-order differencing scheme was implemented and all results from the potential barrier was reproduced. As seen in Fig. \ref{fig:diff-wave}-\ref{fig:diff-k0} the results are practically identical to those of the split operator method. In order to see that there actually is a difference the numerical solutions in Fig. \ref{fig:barrier-k0} and Fig. \ref{fig:diff-k0} was subtracted and plotted in Fig. \ref{fig:error}. This discrepancy in results is too small for the eye to see in one of the original figures meaning that their results can be taken as equal.
+
+Running a simulation using both methods for with the same IC and simulation time gives a way of comparing the computation times of the algorithms. The second-order differencing scheme needed a shorter time step $\Delta = 5 \cdot 10^{-8}$ in order to converge and thus more steps $N_t = 245000$ had to be taken. The split method had $\Delta t = 2 \cdot 10^{-7}$ and took $N_t = 60000$ steps. The time for these simulations was $215.30$s and $151.04$s respectively. This means that the split operator method is in fact faster that the other method and this is probably the reason why \verb|wavepacket.c| uses this. One thing one must note is that even though a lot of the same code was used in the second-order differencing code in order to make a fair comparison this might not be the best way to do it. There may be faster implementations to this and probably a lot of code optimization to be done before it works optimally. The split operator method code is old in comparison and a lot of optimization of it has been done in order for it to perform at its fullest. This means that even though the results here show that this method is faster, more tests and optimization must be done for the second-order differencing code before any hard conclusions can be drawn about the computation times.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/diff-barrier-wave170}
+  \caption{$k_0 = 170$}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/diff-barrier-wave280}
+  \caption{$k_0 = 280$}
+  \end{subfigure}
+  \caption{Numerical solution of the time dependent schrödinger equation of the potential barrier using the second-order differencing scheme. The potential in the figure is not to scale.}
+  \label{fig:diff-wave}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/diff-barrier-RT170}
+  \caption{$k_0 = 170$}
+  \label{fig:diff_RT170}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=0.9\textwidth]{figs/diff-barrier-RT280}
+  \caption{$k_0 = 280$}
+  \end{subfigure}
+  \caption{Reflection and transmission coefficient of the particles in Fig. \ref{fig:diff-wave}.}
+  \label{fig:diff-RT}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{../wavepacket/figs/diff-barrier-RTk0}
+  \caption{Reflection and transmission coefficient for different center wavenumbers used using the second-order differencing scheme. $k_V$ is the wavenumber corresponding to the potential barrier height.}
+  \label{fig:diff-k0}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{figs/error}
+  \caption{The difference between the results from the split operator method and the second-order differencing scheme versus central wavenumber.}
+  \label{fig:error}
 \end{figure}

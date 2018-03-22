@@ -31,10 +31,10 @@ for any small step size $\Delta t$. The problem with this naive solution is that
 One way to get around this is by noting that the kinetic operator includes a second derivative in position space but a a simple multiplication in momentum space. Namely that
 
 \begin{equation*}
-  e^{\frac{i \Delta t \hbar}{2m}\frac{\dn^2}{\dn x^2}}\psi(x,t) \longleftrightarrow e^{- \frac{i \Delta t }{2m\hbar}p^2}\psi(p,t)
+  e^{\frac{i \Delta t \hbar}{2m}\frac{\dn^2}{\dn x^2}}\psi(x,t) \longleftrightarrow e^{- \frac{i \Delta t }{2m\hbar}p^2}\psi(p,t),
 \end{equation*}
 
-This motivates the splitting of the hamilton operator into two parts, taking the potential operator in position space and the kinetic operator in ordinary space. The final time stepping can thus be written as
+where $p$ is the momentum of the particle. This motivates the splitting of the hamilton operator into two parts, taking the potential operator in position space and the kinetic operator in ordinary space. The final time stepping can thus be written as
 
 \begin{equation}
   \label{eq:split}
@@ -73,17 +73,18 @@ By expanding the exponentials we get
 which leads to
 
 \begin{equation}
+\label{eq:diffSchemeStepper}
    (e^{-\frac{i\Delta t}{\hbar}\hat{H}}-e^{\frac{i\Delta t}{\hbar}\hat{H}})\psi(t) = - \frac{2i\Delta t}{\hbar}\hat H + \mathcal O(\Delta t^3).
 \end{equation}
 
-This means that the update scheme for this method can be written as
+By neglecting the higher order terms the updating scheme for this method can be written as
 
 \begin{equation}
   \label{eq:diffScheme}
   \psi(t+\Delta t) = -\frac{2i\Delta t}{\hbar}\hat H \psi(t) + \psi(t-\Delta t).
 \end{equation}
 
-The man difficulty with this method is that two previous values are needed in order to start the sequence. A common solution to this is by taking one Euler step back in time in order to find $\psi_{-1}$. More about how this was implemented is found in the method section, Sec. \ref{sec:diffScheme}.
+The main difficulty with this method is that two previous values are needed in order to start the sequence. A common solution to this is to take one Euler step back in time in order to find $\psi_{-1}$. More about how this was implemented is found in the method section, Sec. \ref{sec:diffScheme}.
 
 \subsection{The free particle}
 
@@ -101,7 +102,7 @@ The analytical solution to Eq. \eqref{eq:TDSE} for this initial condition using 
   \psi(x,t) = \left(\frac{\sigma_0^2}{\pi}\right)^{1/4} \frac{e^{i\phi}}{(\sigma_0^2 + it)^{1/2}} e^{ik_0x} exp \left[ - \frac{(x-x_0-k_0t)^2}{2\sigma_0^2 + 2it}\right]
 \end{equation}
 
-where $\phi \equiv -\theta -k_0^2t/2$ and $\tan \theta = t/\sigma_0$. By comparing this analytial solution to the one obtained by the numerical solution one can determine the validity and and stability of the numerical algorithm.
+where $\phi \equiv -\theta -k_0^2t/2$ and $\tan \theta = t/\sigma_0$\cite{sakurai}. By comparing this analytial solution to the one obtained by the numerical solution one can determine the validity and and stability of the numerical algorithm.
 
 \subsection{The potential well}
 
@@ -122,7 +123,7 @@ yields a more interesting case, with $V_0$ being a positive constant. Outside of
   T = \frac{1}{ \left( 1+ [V_0^2 /4 E (E+V_0)]\sin^2(2a\sqrt{2m(E+V_0)/\hbar^2})    \right)  },
 \end{equation}
 
-where $E =\hbar^2 k_0^2/2m$ is the average energy of the particle. Now $T$ is the probability of the particle being transmitted through the well and similarly $R=1-T$ is the probability of reflectance. Looking at Eq. \ref{eq:well-T} on can see that it will resonate with the potential well and have maximum when
+where $E =\hbar^2 k_0^2/2m$ is the average energy of the particle\cite{sakurai}. Now $T$ is the probability of the particle being transmitted through the well and similarly $R=1-T$ is the probability of reflectance. Looking at Eq. \ref{eq:well-T} on can see that it will resonate with the potential well and have maximum when
 
 \begin{equation}
   \label{eq:resonance}
@@ -134,7 +135,7 @@ This could be viewed as standing waves in the potential well, making it transpar
 
 \subsection{The potential barrier}
 
-Changing the sign of $V_0$ in Eq. \eqref{eq:pot-well} yields a potential barrier. Now the intuitive solution would be that the the quantum particle would bounce on the barrier but in quantum mechanics, there is always a probability of transmittance, regardless of the energy of the particle. This is called tunneling. If the energy of the particle is less than the energy of the barrier, the transmission coefficient will be the same as Eq. \eqref{eq:well-T} but with a change of sign from $V_0$ to $-V_0$. If the energy is larger than the barrier height, the transmission coefficient will be
+Changing the sign of $V_0$ in Eq. \eqref{eq:pot-well} yields a potential barrier. Now the intuitive solution would be that the the quantum particle would bounce on the barrier but in quantum mechanics, there is always a probability of transmittance, regardless of the energy of the particle. This is called tunneling. If the energy of the particle is less than the energy of the barrier, the transmission coefficient will be the same as Eq. \eqref{eq:well-T} but with a change of sign from $V_0$ to $-V_0$. If the energy is larger than the barrier height, the transmission coefficient will be\cite{sakurai}
 
 \begin{equation}
   \label{eq:barr-T}

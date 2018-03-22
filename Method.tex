@@ -19,7 +19,7 @@ As a final study the numerical algorithm was changed and the program \verb|diffS
 
 \subsection{wavepacket.c}
 
-The program \verb|wavepacket| is a simulation program for quantum particles using the split-operator method described in Sec. \ref{sec:splitOp}. The program was used with different potentials yielding different executable files. There three potentials can be compiled using either of the commands
+The program \verb|wavepacket| is a simulation program for quantum particles using the split-operator method described in Sec. \eqref{sec:splitOp}. The program was used with different potentials yielding different executable files. There three potentials can be compiled using either of the commands
 
 \begin{itemize}
   \item \verb|make freepart|
@@ -27,9 +27,9 @@ The program \verb|wavepacket| is a simulation program for quantum particles usin
   \item \verb|make barrier|
 \end{itemize}
 
-for the free particle, potential well and potential barrier correspondingly. The program uses \verb|FFTW| in order to compute the fourier transforms so this library must be installed in order to compile the program correctly.
+for the free particle, potential well and potential barrier respectively. The program uses \verb|FFTW| in order to compute the fourier transforms so this library must be installed in order to compile the program correctly.
 
-The simulations are then executed by adding and argument file containing the parameters (preferrably the template file in the appendix \ref{App:input}) and an argument with the initial wavenumber. If the input file is found in a folder called \verb|input_files| then a simulation for the potential well using $k_0=200$ could be excetuted using the line
+The simulations are then executed by adding an argument file containing the parameters (preferrably the template file in appendix \ref{sec:Appendix}) and an argument with the initial wavenumber. If the input file is found in a folder called \verb|input_files| then a simulation for the potential well using $k_0=200$ could be excetuted using the line
 
 \verb|./potwell input_files/pot_well_template.in 200|
 
@@ -37,3 +37,88 @@ The simulations are then executed by adding and argument file containing the par
 \label{sec:diffScheme}
 
 The program implementing the second-order differencing scheme is called \verb|waveDiff| and can be compiled by the command \verb|make diffScheme|. No external libraries was used in the implementation of this code. The same datatypes and general funcitons (e.g. the routine for reading parameters and printing results) as in \verb|wavepacket| was used in order to be able to compare the computation times. A similar command can be used to execute a simulation using this program. Note however that the time step used must be about $5\cdot 10^{-8}$ in order to achieve convergence.
+
+\subsubsection{Implementation}
+
+In order to implement the update scheme as described in Sec. \ref{sec:secondDiff} we must first construct the hamiltonian. This is done by looking at the matrices corresponding to the kinetic operator and the potential operator. In order to construct the kinetic operator matrix, containing a second derivative one can make use of the central difference approximation
+
+\begin{equation}
+  \frac{\dn^2}{\dn x^2}f(x_i) \approx \frac{f_{i+1}-2f_i + f_{i-1}}{\Delta x^2}
+\end{equation}
+
+to obtain
+
+\begin{equation}
+  \label{eq:kineticOP}
+  \hat T = -\frac{\hbar^2}{2m\Delta x^2}\begin{bmatrix}
+    -2 & 1 & 0 & \hdots & 0 \\
+    1 & -2 & 1 & & \\
+    0 & 1 & -2 & 1 &  \vdots \\
+    \vdots & & \ddots &\ddots & \\
+    & & & & -2
+  \end{bmatrix}.
+\end{equation}
+
+The potential operator is in this case a simple diagnal matrix
+
+\begin{equation}
+  \label{eq:potOP}
+  \hat V = \begin{bmatrix}
+    V_1 & 0 & \hdots & 0 \\
+    0 & V_2 & 0 &  \vdots\\
+    \vdots & & \ddots &  \\
+    0& & & V_N
+  \end{bmatrix}
+\end{equation}
+
+This means that the diagonal elements of $\hat H$ and off diagonal elements are found as
+
+\begin{equation}
+  \label{eq:Helements}
+  \begin{split}
+    H_{i,i} &= \frac{\hbar^2}{m\Delta x^2} + V_i \\
+    H_{i,i+1} &= H_{i,i-1} = -\frac{\hbar^2}{2m\Delta x^2}.
+  \end{split}
+\end{equation}
+
+The implementation of this makes use of the fact that the matrix is tridiagonal and computes the matrix-vector product elementwise. It also includes the prefactor of $\Delta t/\hbar$ from Eq. \ref{eq:diffSchemeStepper}.
+
+The function for computing this matrix-vector product is called \verb|hamiltonian_operator| and is found in the appendix \ref{sec:Appendix}. It is used by the following header
+
+\verb|void hamiltonian_operator(const parameters params,|\newline\verb| double complex *psi, double complex *Hpsi);|
+
+where \verb|params| is a struct as described in \cite{wavepacket}, \verb|psi| is the wavefunction to be premultiplied and \verb|Hpsi| is the resulting vector ofter the multiplication.
+
+In order to get good initial conditions for the algorithm, half an euler step back in time and half step forward in time is done to get a smaller error and symmetry also in the first step. Namely by computing
+
+\begin{equation}
+\label{eq:halfEuler}
+  \begin{split}
+    \psi_{-1/2} &= \left( 1 + \frac{i\Delta t}{2\hbar}\hat H\right)\psi_0 \\
+    \psi_{1/2} &= \left( 1 - \frac{i\Delta t}{2\hbar}\hat H\right)\psi_0 \\
+  \end{split}
+\end{equation}
+
+which changes Eq. \eqref{eq:diffSchemeStepper} to
+
+\begin{equation}
+\label{eq:fullStep}
+  \psi_{n+3/2} = -2\frac{i\Delta t}{\hbar}\hat H \psi_{n+1/2} + \psi_{n-1/2}.
+\end{equation}
+
+In order to perform this update, two functions are needed;
+
+\begin{itemize}
+  \item \verb|void take_step(double complex type,double complex *Hpsi,|\newline\verb| double complex *psi,parameters params);|
+  \item \verb|void swap_vectors(double complex *psi1,double complex|\newline\verb| *psi2,parameters params);|
+\end{itemize}
+
+The first performs the actual step and the second swaps the elements of two vectors. This is needed in order to prepare for the next step to be taken. The function \verb|take_step| takes an argument \verb|type| which is the type of step to be taken. This is a purely complex value including the last prefactor in Eq. \eqref{eq:halfEuler}-\eqref{eq:fullStep}. That is, one of the following $\{0.5i,-0.5i,-2i\}$. The function itself performs the following update
+
+\begin{equation*}
+  \psi \leftarrow \psi + \text{type}\cdot H\psi
+\end{equation*}
+
+which is why the swapping function is needed in order do perform the uptade scheme in Eq. \eqref{eq:fullStep}.
+
+In addition to these functions the routine for computing the reflection and transmission coefficient is found in the function \verb|user_observe| as described in \cite{wavepacket} and implements Eq. \eqref{eq:RTnumerical} in a straightforward manner.

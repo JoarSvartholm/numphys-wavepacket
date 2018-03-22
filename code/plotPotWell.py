@@ -20,7 +20,7 @@ V0 = -1
 a = 0.04
 V = 0*(abs(xx)>=a)+ V0*(abs(xx)<a)
 
-x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_well_wave_k0_170.dat",unpack=True,skip_header=True)
+x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_well_wave_k0_280.dat",unpack=True,skip_header=True)
 
 m = np.max(np.abs(psi02))
 plt.figure("Potential Well")
@@ -32,7 +32,7 @@ plt.ylabel("$\Psi$ [Normalized]")
 plt.xlabel("x")
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/pot-well-wave.pdf")
+    plt.savefig("../figs/pot-well-wave280.pdf")
 
 
 t,R,T = np.genfromtxt("../data/pot_well_RT_k0_280.dat",unpack=True,skip_header=True)
@@ -44,7 +44,7 @@ plt.xlabel("t [s]")
 plt.xlim(0,0.008)
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/pot-well-RT.pdf")
+    plt.savefig("../figs/pot-well-RT280.pdf")
 
 k = np.linspace(150,350,100)
 V0 = 1e5

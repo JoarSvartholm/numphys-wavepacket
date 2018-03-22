@@ -19,7 +19,8 @@
 
 % State the aim of the experiment, what was measured, which techniques and methods were used, and the main result(s) and conclusion(s). Remember that the abstract should be understandable on its own, and you can thereby not refer to equations/figures/tables in the report. You should also not use references, since the information in the abstract should be available in the actual report.
 \begin{abstract}
-  abstract
+  \noindent According to the Heisenberg principle, it is impossible to know the exakt position and and momentum of a quantum particle at the same time. This motivates the use of a wavefunction describing the probability of a particle at a given position. When simulating the dynamics of such particle, that is by solving the time dependent Schrödinger equation, one must know the wavefunction all over space at each time step. This makes the problem extremely difficult and computationally heavy. In this report, a quantum particle is simulated using two different numerical methods, the split operator method and the second-order differencing method. The particle is simulated as a free particle, hitting a potential well and a potential barrier. For the well and the barrier, the reflection and transmission coefficient was computed and compared to analytical expressions. The results of this was in good accordance to what was expected. The numerical solutions seemed to undershoot the transmission coefficient near the resonating energies, that is for energies close to the eigenenergies of the potential well. This could be explained as the simulated particles contained a distribution of wavenumbers and the analytical expressions was basen on monochromatic waves.
+  The two numerical methods was then compared with respect to computation time and the results showed that the split operator method was faster. There is however room for improvements on the code for the second-order differencing method which is why more testing must be done before one can conclude this for sure.
 
 \end{abstract}
 
@@ -47,9 +48,24 @@
 \input{Results}
 \input{Conclusions}
 
-\begin{thebibliography}{R}
+%\addcontentsline{toc}{section}{R References}
+\bibliographystyle{unsrt}
+\begin{thebibliography}{}
+  \bibitem{sakurai} J. J. Sakurai and J. Napolitano, Modern Quantum Mechanics (Cambridge
+  University Press, Cambridge, 2017
+
   \bibitem{wavepacket}C. M. Dion, A. Hashemloo, and G. Rahali, Program for quantum wavepacket
 dynamics with time-dependent potentials, Comput. Phys. Commun.
 185, 407 (2014).
+
 \end{thebibliography}
+
+\appendix
+\section{Codes}
+\label{sec:Appendix}
+
+\lstinputlisting{code/input_files/pot_well_template.in}
+\lstinputlisting{code/hamiltonian_operator.c}
+
+
 \end{document}

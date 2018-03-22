@@ -188,12 +188,6 @@ void hamiltonian_operator(const parameters params, double complex *psi, double c
 	//Set last element
 	Hpsi[N-1] = Hp1 + Hp2;
 
-
-		/*for(int i=0;i<params.nx;i++){
-			psi0 = gsl_vector_complex_get(Hpsi,i);
-			gsl_vector_complex_set(Hpsi,i,gsl_complex_mul(alpha,psi0));
-		}*/
-
 }
 
 void take_step(double complex type,double complex *Hpsi, double complex *psi,parameters params){

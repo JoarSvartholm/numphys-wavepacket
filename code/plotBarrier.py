@@ -20,7 +20,7 @@ V0 = 1
 a = 0.01
 V = 0*(abs(xx)>=a)+ V0*(abs(xx)<a)
 
-x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_barrier_wave_k0_180.dat",unpack=True,skip_header=True)
+x,psiR,psiI,psi2 = np.genfromtxt("../data/pot_barrier_wave_k0_280.dat",unpack=True,skip_header=True)
 
 m = np.max(np.abs(psi02))
 plt.figure("Potential Well")
@@ -32,10 +32,10 @@ plt.xlabel("x")
 plt.ylabel("$\Psi$ [Normalized]")
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/pot-barrier-wave.pdf")
+    plt.savefig("../figs/pot-barrier-wave280.pdf")
 
 
-t,R,T = np.genfromtxt("../data/pot_barrier_RT_k0_180.dat",unpack=True,skip_header=True)
+t,R,T = np.genfromtxt("../data/pot_barrier_RT_k0_280.dat",unpack=True,skip_header=True)
 
 plt.figure("relfection transmission")
 plt.plot(t,R,label="$R$")
@@ -44,7 +44,7 @@ plt.xlabel("t [s]")
 plt.xlim(0,0.01)
 plt.legend()
 if savePlots:
-    plt.savefig("../figs/pot-barrier-RT.pdf")
+    plt.savefig("../figs/pot-barrier-RT280.pdf")
 
 kk= np.linspace(150,350,100)
 k = np.linspace(150,199.99,100)
